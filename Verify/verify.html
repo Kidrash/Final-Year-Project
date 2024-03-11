@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Verification</title>
+</head>
+<body>
+  <h1>Student Verification</h1>
+
+  <script>
+    // Function to parse URL parameters
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    // Get the parameters from the URL
+    const studentId = getParameterByName('studentId');
+    const studentName = getParameterByName('studentName');
+    const phoneNumber = getParameterByName('phoneNumber');
+    const email = getParameterByName('email');
+
+    // Verify if the student is a member of MMU (valid)
+    const isMemberOfMMUK = true; // You can implement your verification logic here
+
+    // Display verification status
+    const verificationStatusElement = document.createElement('p');
+    if (isMemberOfMMUK) {
+      verificationStatusElement.textContent = `Student ${studentName} with ID ${studentId} is a verified member of Multimedia University of Kenya.`;
+      verificationStatusElement.style.color = 'green';
+    } else {
+      verificationStatusElement.textContent = `Student ${studentName} with ID ${studentId} is not a verified member of Multimedia University of Kenya.`;
+      verificationStatusElement.style.color = 'red';
+    }
+    document.body.appendChild(verificationStatusElement);
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student QR Code Generator</title>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Student QR Code Generator</h1>
+    <label for="studentId">Student ID:</label>
+    <input type="text" id="studentId" placeholder="Enter student ID">
+    <label for="studentName">Name:</label>
+    <input type="text" id="studentName" placeholder="Enter student name">
+    <label for="phoneNumber">Phone Number:</label>
+    <input type="tel" id="phoneNumber" placeholder="Enter phone number">
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" placeholder="Enter email address">
+    <button onclick="generateQRCode()">Generate QR Code</button>
+    <button id="downloadButton" onclick="downloadQRCode()" disabled>Download QR Code</button>
+    <button id="saveButton" onclick="saveStudentData()">Save</button>
+    <div id="qrcode"></div>
+    <p id="warningMessage" style="color: red;"></p>
+  </div>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    label {
+      margin-top: 20px;
+      display: block;
+    }
+
+    input {
+      padding: 8px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    #downloadButton, #saveButton:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+  </style>
+  <script>
+    let qrCodeGenerated = false;
+
+    function generateQRCode() {
+      const studentId = document.getElementById('studentId').value.trim();
+      const studentName = document.getElementById('studentName').value.trim();
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!studentId || !studentName || !phoneNumber || !email) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      if (qrCodeGenerated) {
+        document.getElementById('warningMessage').innerText = 'QR code already generated';
+        return;
+      }
+
+      const verificationUrl = `/Verify/verify.html?studentId=${encodeURIComponent(studentId)}&studentName=${encodeURIComponent(studentName)}&phoneNumber=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(email)}`;
+
+      const qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: verificationUrl,
+        width: 128,
+        height: 128
+      });
+
+      document.getElementById('downloadButton').disabled = false;
+      qrCodeGenerated = true;
+      document.getElementById('warningMessage').innerText = '';
+    }
+
+    function downloadQRCode() {
+      const canvas = document.getElementById('qrcode').getElementsByTagName('canvas')[0];
+      const imageData = canvas.toDataURL('image/png');
+
+      const link = document.createElement('a');
+      link.href = imageData;
+      link.download = 'qr_code.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function saveStudentData() {
+      const studentId = document.getElementById('studentId').value.trim();
+      const studentName = document.getElementById('studentName').value.trim();
+      const phoneNumber = document.getElementById('phoneNumber').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      fetch('/Server/server.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          studentId,
+          studentName,
+          phoneNumber,
+          email
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save student data');
+        }
+        return response.text();
+      })
+      .then(data => {
+        alert('Saved successfully'); // Display success message
+      })
+      .catch(error => {
+        console.error('Error saving student data:', error);
+        alert('An error occurred while saving student data');
+      });
+    }
+  </script>
+</body>
+</html>

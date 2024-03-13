@@ -124,7 +124,7 @@
       const phoneNumber = document.getElementById('phoneNumber').value.trim();
       const email = document.getElementById('email').value.trim();
 
-      fetch('/Server/generate-qr-code', {
+      fetch('./Server/generate-qr-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

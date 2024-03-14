@@ -124,7 +124,7 @@
       const phoneNumber = document.getElementById('phoneNumber').value.trim();
       const email = document.getElementById('email').value.trim();
 
-      fetch('./Server/generate-qr-code', {
+      fetch('http://localhost:3001/generate-qr-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -135,6 +135,7 @@
           phoneNumber,
           email
         })
+        //console.log(`Saved data for Student ID ${studentId}`);
       })
       .then(response => {
         if (!response.ok) {
@@ -144,7 +145,14 @@
       })
       .then(data => {
         alert('Saved successfully'); // Display success message
+      // Clear input fields after successful save
+        document.getElementById('studentId').value = '';
+        document.getElementById('studentName').value = '';
+        document.getElementById('phoneNumber').value = '';
+        document.getElementById('email').value = '';
+
       })
+      
       .catch(error => {
         console.error('Error saving student data:', error);
         alert('An error occurred while saving student data');
